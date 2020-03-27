@@ -1,15 +1,25 @@
-service: sls-dynamo-cognito
+service:
+  name: ${self:custom.service}
 
 custom:
+  service: sls-dynamo-cognito
+  stage: dev
   settings:
-    DYNAMODB_TABLE: "sls-dynamo-cognito-table"
+    DYNAMODB_TABLE: ${self:custom.service}-table
+    COGNITO_USERPOOL: ${self:custom.service}-user-pool
+    COGNITO_USERPOOL_CLIENT: ${self:custom.service}-user-pool-client
+    AUTHORIZER: ${self:custom.service}-authorizer
+    USER_POOL_ID:
+      Ref: CognitoUserPool
+    APP_CLIENT_ID:
+      Ref: CognitoUserPoolClient
 
 provider:
   name: aws
   runtime: nodejs12.x
   profile: default
   region: eu-west-1
-  stage: dev
+  stage: ${self:custom.stage}
   environment: ${self:custom.settings}
 
   iamRoleStatements:
@@ -26,36 +36,59 @@ provider:
 
 functions:
   saveItem:
-    handler: handler.saveItem
+    handler: items.saveItem
     events:
       - http:
           path: items
           method: post
   getItem:
-    handler: handler.getItem
+    handler: items.getItem
     events:
       - http:
           path: items/{itemId}
           method: get
   getItems:
-    handler: handler.getItems
+    handler: items.getItems
     events:
       - http:
           path: items
           method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
   deleteItem:
-    handler: handler.deleteItem
+    handler: items.deleteItem
     events:
       - http:
           path: items/{itemId}
           method: delete
   updateItem:
-    handler: handler.updateItem
+    handler: items.updateItem
     events:
       - http:
           path: items/{itemId}
           method: put
+  signIn:
+    handler: auth.signIn
+    events:
+      - http:
+          path: auth/signIn
+          method: post
+  signUp:
+    handler: auth.signUp
+    events:
+      - http:
+          path: auth/signUp
+          method: post
 
+  preSignUp:
+    handler: auth.preSignUp
+    events:
+      - cognitoUserPool:
+          pool: ${self:custom.settings.COGNITO_USERPOOL}
+          trigger: PreSignUp
+          existing: true
 
 resources:
   Resources:
@@ -74,3 +107,39 @@ resources:
         TableName: ${self:custom.settings.DYNAMODB_TABLE}
         StreamSpecification:
           StreamViewType: NEW_IMAGE
+
+    CognitoUserPool:
+      Type: "AWS::Cognito::UserPool"
+      Properties:
+        MfaConfiguration: OFF
+        UserPoolName: ${self:custom.settings.COGNITO_USERPOOL}
+        UsernameAttributes:
+          - email
+#        AutoVerifiedAttributes:
+#          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: True
+            RequireNumbers: True
+            RequireSymbols: False
+            RequireUppercase: True
+    CognitoUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Properties:
+        ClientName: ${self:custom.settings.COGNITO_USERPOOL_CLIENT}
+        GenerateSecret: False
+        UserPoolId:
+          Ref: CognitoUserPool
+    ApiGatewayAuthorizer:
+      DependsOn:
+        - ApiGatewayRestApi
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: ${self:custom.settings.AUTHORIZER}
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - Fn::GetAtt: [CognitoUserPool, Arn]

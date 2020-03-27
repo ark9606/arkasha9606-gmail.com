@@ -37,11 +37,7 @@ class DB {
   }
 
   getItems() {
-    const params = {
-      ...this.params,
-      FilterExpression: "attribute_exists(id)",
-    };
-    return dynamo.scan(params).promise().then(res => res.Items);
+    return dynamo.scan(this.params).promise().then(res => res.Items);
   }
 
   deleteItem(itemId) {
