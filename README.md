@@ -7,3 +7,12 @@ Practice of using technologies:
 - AWS lambda
 - DynamoDB
 
+### Scripts
+
+- deploy lambda
+
+    `sls deploy`
+
+- run lambda local
+
+    `serverless invoke local --function getItems`
