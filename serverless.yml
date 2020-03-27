@@ -1,0 +1,76 @@
+service: sls-dynamo-cognito
+
+custom:
+  settings:
+    DYNAMODB_TABLE: "sls-dynamo-cognito-table"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: default
+  region: eu-west-1
+  stage: dev
+  environment: ${self:custom.settings}
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:GetItem"
+        - "dynamodb:PutItem"
+        - "dynamodb:UpdateItem"
+        - "dynamodb:DeleteItem"
+        - "dynamodb:ListStreams"
+        - "dynamodb:Scan"
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}"
+
+functions:
+  saveItem:
+    handler: handler.saveItem
+    events:
+      - http:
+          path: items
+          method: post
+  getItem:
+    handler: handler.getItem
+    events:
+      - http:
+          path: items/{itemId}
+          method: get
+  getItems:
+    handler: handler.getItems
+    events:
+      - http:
+          path: items
+          method: get
+  deleteItem:
+    handler: handler.deleteItem
+    events:
+      - http:
+          path: items/{itemId}
+          method: delete
+  updateItem:
+    handler: handler.updateItem
+    events:
+      - http:
+          path: items/{itemId}
+          method: put
+
+
+resources:
+  Resources:
+    ImagesTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.settings.DYNAMODB_TABLE}
+        StreamSpecification:
+          StreamViewType: NEW_IMAGE
