@@ -43,9 +43,12 @@ const updateItem = async (event, context, callback) => {
   const paramName = body.paramName;
   const paramValue = body.paramValue;
 
-  const res = await db.updateItem(itemId, paramName, paramValue);
-  console.log(res);
-  callback(null, utils.createResponse(200, res));
+  try {
+    const res = await db.updateItem(itemId, paramName, paramValue);
+    callback(null, utils.createResponse(200, res));
+  } catch (e) {
+    callback(null, utils.createResponse(e.statusCode, e.message));
+  }
 };
 
 module.exports = {
