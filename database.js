@@ -51,17 +51,16 @@ class DB {
     return dynamo.delete(params).promise();
   }
 
-  updateItem(itemId, paramsName, paramsValue) {
+  updateItem(itemId, item) {
+    const [updateExpression, expressionAttributeValueMap] = serializeItem(item);
     const params = {
       ...this.params,
       Key: {
         id: itemId,
       },
       ConditionExpression: 'attribute_exists(id)',
-      UpdateExpression: 'set ' + paramsName + ' = :v',
-      ExpressionAttributeValues: {
-        ':v': paramsValue
-      },
+      UpdateExpression: updateExpression,
+      ExpressionAttributeValues: expressionAttributeValueMap,
       ReturnValues: 'ALL_NEW'
     };
 
@@ -69,6 +68,20 @@ class DB {
       return response.Attributes;
     });
   }
+}
+function serializeItem(dict) {
+  let updateExpression = 'set';
+  const expressionAttributeValueMap = {};
+  let curr = 1;
+  const keys = Object.keys(dict);
+  for (const key of keys) {
+    const valueKey = `:v${curr}`;
+    curr++;
+
+    updateExpression += ` ${key} = ${valueKey}`;
+    expressionAttributeValueMap[valueKey] = dict[key];
+  }
+  return [updateExpression, expressionAttributeValueMap];
 }
 
 module.exports = new DB();

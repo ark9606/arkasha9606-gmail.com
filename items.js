@@ -40,11 +40,9 @@ const updateItem = async (event, context, callback) => {
   const itemId = event.pathParameters.itemId;
 
   const body = JSON.parse(event.body);
-  const paramName = body.paramName;
-  const paramValue = body.paramValue;
 
   try {
-    const res = await db.updateItem(itemId, paramName, paramValue);
+    const res = await db.updateItem(itemId, body);
     callback(null, utils.createResponse(200, res));
   } catch (e) {
     callback(null, utils.createResponse(e.statusCode, e.message));
