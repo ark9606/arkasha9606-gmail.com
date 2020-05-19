@@ -15,22 +15,22 @@ Practice of using technologies:
 
 - run lambda locally
 
-    saveItem:
+    save:
 
     `serverless invoke local --function saveItem --data '{ "body": "{ \"thing\": \"Carpet\" }" }'`
 
-    getItems:
+    get all:
 
     `serverless invoke local --function getItems`
     
-    getItem:
+    get one:
     
     `serverless invoke local --function getItem --data '{ "pathParameters": { "itemId": "xxx" } }'`
     
-    deleteItem:
+    delete:
     
     `serverless invoke local --function deleteItem --data '{ "pathParameters": { "itemId": "xxx" } }'`
     
-    saveItem:
+    update:
     
     `serverless invoke local -f updateItem -d '{ "pathParameters": { "itemId": "xxx" }, "body": "{ \"paramName\": \"thing\", \"paramValue\": \"Water\" }" }'`

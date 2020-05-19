@@ -8,6 +8,7 @@ const saveItem = async (event, context, callback) => {
   const item = JSON.parse(event.body);
   console.log(item);
   item.id = uuidv1();
+  item.createdAt = new Date().toISOString();
 
   const res = await db.saveItem(item);
   console.log(res);

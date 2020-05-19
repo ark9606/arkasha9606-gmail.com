@@ -41,6 +41,10 @@ functions:
       - http:
           path: items
           method: post
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
   getItem:
     handler: items.getItem
     events:
@@ -53,22 +57,26 @@ functions:
       - http:
           path: items
           method: get
-          authorizer:
-            type: COGNITO_USER_POOLS
-            authorizerId:
-              Ref: ApiGatewayAuthorizer
   deleteItem:
     handler: items.deleteItem
     events:
       - http:
           path: items/{itemId}
           method: delete
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
   updateItem:
     handler: items.updateItem
     events:
       - http:
           path: items/{itemId}
           method: put
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
   signIn:
     handler: auth.signIn
     events:
