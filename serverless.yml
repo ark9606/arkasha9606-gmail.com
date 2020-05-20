@@ -5,7 +5,7 @@ custom:
   service: sls-dynamo-cognito
   stage: dev
   settings:
-    DYNAMODB_TABLE: ${self:custom.service}-table
+    DYNAMODB_TABLE: ${self:custom.service}-things-table
     COGNITO_USERPOOL: ${self:custom.service}-user-pool
     COGNITO_USERPOOL_CLIENT: ${self:custom.service}-user-pool-client
     AUTHORIZER: ${self:custom.service}-authorizer
@@ -31,6 +31,7 @@ provider:
         - "dynamodb:DeleteItem"
         - "dynamodb:ListStreams"
         - "dynamodb:Scan"
+        - "dynamodb:Query"
       Resource:
         - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}"
 
@@ -100,15 +101,19 @@ functions:
 
 resources:
   Resources:
-    ImagesTable:
+    ThingsTable:
       Type: "AWS::DynamoDB::Table"
       Properties:
         AttributeDefinitions:
           - AttributeName: "id"
             AttributeType: "S"
+          - AttributeName: "createdAt"
+            AttributeType: "N"
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
+          - AttributeName: "createdAt"
+            KeyType: "RANGE"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

@@ -1,16 +1,13 @@
 'use strict';
 
-const uuidv1 = require('uuid/v1');
 const db = require('./database');
 const utils = require('./utils');
 
 const saveItem = async (event, context, callback) => {
   const item = JSON.parse(event.body);
   console.log(item);
-  item.id = uuidv1();
-  item.createdAt = new Date().toISOString();
 
-  const res = await db.saveItem(item);
+  const res = await db.insertItem(item);
   console.log(res);
   callback(null, utils.createResponse(200, res));
 };

@@ -1,5 +1,6 @@
 'use strict';
 
+const uuidv1 = require('uuid/v1');
 const AWS = require('aws-sdk');
 let dynamo = new AWS.DynamoDB.DocumentClient();
 
@@ -12,7 +13,9 @@ class DB {
     this.params = { TableName: TABLE_NAME };
   }
 
-  saveItem(item) {
+  insertItem(item) {
+    item.id = uuidv1();
+    item.createdAt = Date.now();
     const params = {
       ...this.params,
       Item: item
