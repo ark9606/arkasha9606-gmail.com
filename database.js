@@ -26,11 +26,12 @@ class DB {
     });
   }
 
-  getItem(itemId) {
+  getItem(itemId, user_sub) {
     const params = {
       ...this.params,
       Key: {
-        id: itemId
+        id: itemId,
+        user_sub
       },
     };
 
@@ -39,27 +40,43 @@ class DB {
     });
   }
 
-  getItems() {
+  getAllItems() {
     return dynamo.scan(this.params).promise().then(res => res.Items);
   }
 
-  deleteItem(itemId) {
+  getItems(user_sub) {
+    const params = {
+      ...this.params,
+      IndexName: 'ThingsTableRecentItemsIndex',
+      KeyConditionExpression: 'user_sub = :us and createdAt > :ca',
+      ExpressionAttributeValues: {
+        ':us': user_sub,
+        ':ca': 0
+      },
+      ScanIndexForward: false,
+    }
+    return dynamo.query(params).promise().then(res => res.Items);
+  }
+
+  deleteItem(itemId, user_sub) {
     const params = {
       ...this.params,
       Key: {
-        id: itemId
+        id: itemId,
+        user_sub
       },
     };
 
     return dynamo.delete(params).promise();
   }
 
-  updateItem(itemId, item) {
+  updateItem(itemId, user_sub, item) {
     const [updateExpression, expressionAttributeValueMap] = serializeItem(item);
     const params = {
       ...this.params,
       Key: {
         id: itemId,
+        user_sub
       },
       ConditionExpression: 'attribute_exists(id)',
       UpdateExpression: updateExpression,
