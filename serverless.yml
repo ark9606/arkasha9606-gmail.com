@@ -7,6 +7,7 @@ custom:
   settings:
     DYNAMODB_TABLE: ${self:custom.service}-table
     COGNITO_USERPOOL: ${self:custom.service}-user-pool
+#    COGNITO_IDENTITYPOOL: ${self:custom.service}-identity-pool
     COGNITO_USERPOOL_CLIENT: ${self:custom.service}-user-pool-client
     AUTHORIZER: ${self:custom.service}-authorizer
     USER_POOL_ID:
@@ -34,6 +35,8 @@ provider:
         - "dynamodb:Query"
       Resource:
         - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}/index/*"
+
 
 functions:
   saveItem:
@@ -182,3 +185,90 @@ resources:
         Type: COGNITO_USER_POOLS
         ProviderARNs:
           - Fn::GetAtt: [CognitoUserPool, Arn]
+    # Next resources are not used in this service
+    # Identity pool: to specify access to AWS services
+#    CognitoIdentityPool:
+#      Type: "AWS::Cognito::IdentityPool"
+#      Properties:
+#        IdentityPoolName: ${self:custom.settings.COGNITO_IDENTITYPOOL}
+#        AllowUnauthenticatedIdentities: false
+#        CognitoIdentityProviders:
+#          - ClientId:
+#              Ref: CognitoUserPoolClient
+#            ProviderName:
+#              Fn::GetAtt: [CognitoUserPool, ProviderName]
+#    CognitoIdentityPoolRoles:
+#      Type: "AWS::Cognito::IdentityPoolRoleAttachment"
+#      Properties:
+#        IdentityPoolId:
+#          Ref: CognitoIdentityPool
+#        Roles:
+#          authenticated:
+#            Fn::GetAtt: [CognitoAuthRole, Arn]
+#          unauthenticated:
+#            Fn::GetAtt: [CognitoUnauthRole, Arn]
+#    CognitoAuthRole:
+#      Type: "AWS::IAM::Role"
+#      Properties:
+#        RoleName: ${self:custom.service}-auth-role
+#        Path: /
+#        AssumeRolePolicyDocument:
+#          Version: "2012-10-17"
+#          Statement:
+#            - Effect: "Allow"
+#              Principal:
+#                Federated: "cognito-identity.amazonaws.com"
+#              Action:
+#                - "sts:AssumeRoleWithWebIdentity"
+#              Condition:
+#                StringEquals:
+#                  "cognito-identity.amazonaws.com:aud":
+#                    Ref: CognitoIdentityPool
+#                "ForAnyValue:StringLike":
+#                  "cognito-identity.amazonaws.com:amr": authenticated
+#        Policies:
+#          - PolicyName: "CognitoAuthorizedPolicy"
+#            PolicyDocument:
+#              Version: "2012-10-17"
+#              Statement:
+#                - Effect: "Allow"
+#                  Action:
+#                    - "dynamodb:GetItem"
+#                    - "dynamodb:PutItem"
+#                    - "dynamodb:UpdateItem"
+#                    - "dynamodb:DeleteItem"
+#                    - "dynamodb:ListStreams"
+#                    - "dynamodb:Scan"
+#                    - "dynamodb:Query"
+#                  Resource:
+#                    - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}"
+#                    - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.DYNAMODB_TABLE}/index/*"
+#    CognitoUnauthRole:
+#      Type: "AWS::IAM::Role"
+#      Properties:
+#        RoleName: ${self:custom.service}-unauth-role
+#        Path: /
+#        AssumeRolePolicyDocument:
+#          Version: "2012-10-17"
+#          Statement:
+#            - Effect: "Allow"
+#              Principal:
+#                Federated: "cognito-identity.amazonaws.com"
+#              Action:
+#                - "sts:AssumeRoleWithWebIdentity"
+#              Condition:
+#                StringEquals:
+#                  "cognito-identity.amazonaws.com:aud":
+#                    Ref: CognitoIdentityPool
+#                "ForAnyValue:StringLike":
+#                  "cognito-identity.amazonaws.com:amr": unauthenticated
+#        Policies:
+#          - PolicyName: "CognitoUnauthorizedPolicy"
+#            PolicyDocument:
+#              Version: "2012-10-17"
+#              Statement:
+#                - Effect: "Allow"
+#                  Action:
+#                    - "cognito-sync:*"
+#                    - "cognito-identity:*"
+#                  Resource: "*"
