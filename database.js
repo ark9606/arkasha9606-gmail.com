@@ -26,12 +26,11 @@ class DB {
     });
   }
 
-  getItem(itemId, user_sub) {
+  getItem(itemId) {
     const params = {
       ...this.params,
       Key: {
         id: itemId,
-        user_sub
       },
     };
 
@@ -40,7 +39,7 @@ class DB {
     });
   }
 
-  getAllItems() {
+  scanAll() {
     return dynamo.scan(this.params).promise().then(res => res.Items);
   }
 
@@ -58,25 +57,23 @@ class DB {
     return dynamo.query(params).promise().then(res => res.Items);
   }
 
-  deleteItem(itemId, user_sub) {
+  deleteItem(itemId) {
     const params = {
       ...this.params,
       Key: {
         id: itemId,
-        user_sub
       },
     };
 
     return dynamo.delete(params).promise();
   }
 
-  updateItem(itemId, user_sub, item) {
+  updateItem(itemId, item) {
     const [updateExpression, expressionAttributeValueMap] = serializeItem(item);
     const params = {
       ...this.params,
       Key: {
         id: itemId,
-        user_sub
       },
       ConditionExpression: 'attribute_exists(id)',
       UpdateExpression: updateExpression,

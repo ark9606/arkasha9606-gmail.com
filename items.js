@@ -14,10 +14,9 @@ const saveItem = async (event, context, callback) => {
 
 const getItem = async (event, context, callback) => {
   const itemId = event.pathParameters.itemId;
-  const user_sub = event.requestContext.authorizer.claims.sub;
   console.log(itemId);
 
-  const res = await db.getItem(itemId, user_sub);
+  const res = await db.getItem(itemId);
   console.log(res);
   callback(null, utils.createResponse(200, res));
 };
@@ -35,27 +34,24 @@ const getItems = async (event, context, callback) => {
 };
 
 const getAllItems = async (event, context, callback) => {
-  const items = await db.getAllItems();
+  const items = await db.scanAll();
   console.log(items);
   callback(null, utils.createResponse(200, items));
 };
 
 const deleteItem = async (event, context, callback) => {
   const itemId = event.pathParameters.itemId;
-  const user_sub = event.requestContext.authorizer.claims.sub;
 
-  await db.deleteItem(itemId, user_sub);
+  await db.deleteItem(itemId);
   callback(null, utils.createResponse(200, 'Item was deleted'));
 };
 
 const updateItem = async (event, context, callback) => {
   const itemId = event.pathParameters.itemId;
-  const user_sub = event.requestContext.authorizer.claims.sub;
-
   const body = JSON.parse(event.body);
 
   try {
-    const res = await db.updateItem(itemId, user_sub, body);
+    const res = await db.updateItem(itemId, body);
     callback(null, utils.createResponse(200, res));
   } catch (e) {
     callback(null, utils.createResponse(e.statusCode, e.message));

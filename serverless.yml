@@ -5,7 +5,7 @@ custom:
   service: sls-dynamo-cognito
   stage: dev
   settings:
-    DYNAMODB_TABLE: ${self:custom.service}-table
+    DYNAMODB_TABLE: ${self:custom.service}-things-table
     COGNITO_USERPOOL: ${self:custom.service}-user-pool
 #    COGNITO_IDENTITYPOOL: ${self:custom.service}-identity-pool
     COGNITO_USERPOOL_CLIENT: ${self:custom.service}-user-pool-client
@@ -131,8 +131,8 @@ resources:
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
-          - AttributeName: "user_sub"
-            KeyType: "RANGE"
+#          - AttributeName: "user_sub"
+#            KeyType: "RANGE"
         GlobalSecondaryIndexes:
           - IndexName: "ThingsTableRecentItemsIndex"
             KeySchema:
