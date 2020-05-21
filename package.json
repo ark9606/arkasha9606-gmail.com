@@ -12,6 +12,7 @@
   "dependencies": {
     "amazon-cognito-identity-js": "^3.2.6",
     "aws-sdk": "^2.647.0",
+    "jwt-decode": "^2.2.0",
     "node-fetch": "^2.6.0",
     "uuid": "^7.0.2"
   }

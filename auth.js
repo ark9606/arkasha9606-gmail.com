@@ -45,6 +45,16 @@ const signUp = async (event, context, callback) => {
   }
 };
 
+const refreshToken = async (event, context, callback) => {
+  const body = JSON.parse(event.body);
+  try {
+    const res = await identity.refreshToken(body);
+    callback(null, utils.createResponse(200, res));
+  } catch (e) {
+    callback(null, utils.createResponse(500, e));
+  }
+};
+
 const preSignUp = (event, context, callback) => {
   event.response.autoConfirmUser = true;
   callback(null, event);
@@ -53,7 +63,8 @@ const preSignUp = (event, context, callback) => {
 module.exports = {
   signIn,
   signUp,
-  preSignUp
+  preSignUp,
+  refreshToken
 };
 
 

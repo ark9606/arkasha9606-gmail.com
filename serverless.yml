@@ -107,6 +107,12 @@ functions:
       - http:
           path: auth/signUp
           method: post
+  refreshToken:
+    handler: auth.refreshToken
+    events:
+      - http:
+          path: auth/refresh-token
+          method: post
 
   preSignUp:
     handler: auth.preSignUp
@@ -131,8 +137,6 @@ resources:
         KeySchema:
           - AttributeName: "id"
             KeyType: "HASH"
-#          - AttributeName: "user_sub"
-#            KeyType: "RANGE"
         GlobalSecondaryIndexes:
           - IndexName: "ThingsTableRecentItemsIndex"
             KeySchema:
