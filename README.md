@@ -1,36 +1,42 @@
-# sls-dynamo-cognito
-sls-dynamo-cognito
+# Description
+This an example of serverless approach in developing backend with AWS.
 
-Practice of using technologies:
-
-- [serverless](https://serverless.com)
+Project includes next technologies:
+- [Serverless](https://serverless.com)
+- API Gateway
 - AWS lambda
 - DynamoDB
+- Cognito
 
-### Scripts
+### Setting project up
+#### Prerequisites:
+- node
+- npm
+
+1 Install AWS CLI from [here](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+
+2 Configure your AWS account as described [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-set-up-credentials.html)
+
+```
+$ aws configure
+> AWS Access Key ID [None]: your_access_key_id
+> AWS Secret Access Key [None]: your_secret_access_key
+```
+3 Install a serverless framework:
+
+    `npm install -g serverless`
+    
+4 Deploy infrastructure - this will create instances of used services:
+
+    `sls deploy`
+
+
+#### Scripts
 
 - deploy lambda
 
     `sls deploy`
 
-- run lambda locally
+- run lambda locally - get all items
 
-    save:
-
-    `serverless invoke local --function saveItem --data '{ "body": "{ \"thing\": \"Carpet\" }" }'`
-
-    get all:
-
-    `serverless invoke local --function getItems`
-    
-    get one:
-    
-    `serverless invoke local --function getItem --data '{ "pathParameters": { "itemId": "xxx" } }'`
-    
-    delete:
-    
-    `serverless invoke local --function deleteItem --data '{ "pathParameters": { "itemId": "xxx" } }'`
-    
-    update:
-    
-    `serverless invoke local -f updateItem -d '{ "pathParameters": { "itemId": "xxx" }, "body": "{ \"paramName\": \"thing\", \"paramValue\": \"Water\" }" }'`
+    `serverless invoke local --function getAllItems`
