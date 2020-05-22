@@ -124,38 +124,8 @@ functions:
 
 resources:
   - ${file(resources/authorizer.yml)}
+  - ${file(resources/dynamodb/things-table.yml)}
   - Resources:
-      ThingsTable:
-        Type: "AWS::DynamoDB::Table"
-        Properties:
-          AttributeDefinitions:
-            - AttributeName: "id"
-              AttributeType: "S"
-            - AttributeName: "user_sub"
-              AttributeType: "S"
-            - AttributeName: "createdAt"
-              AttributeType: "N"
-          KeySchema:
-            - AttributeName: "id"
-              KeyType: "HASH"
-          GlobalSecondaryIndexes:
-            - IndexName: "ThingsTableRecentItemsIndex"
-              KeySchema:
-                - AttributeName: "user_sub"
-                  KeyType: "HASH"
-                - AttributeName: "createdAt"
-                  KeyType: "RANGE"
-              Projection:
-                ProjectionType: ALL
-              ProvisionedThroughput:
-                ReadCapacityUnits: 1
-                WriteCapacityUnits: 1
-          ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
-          TableName: ${self:custom.settings.DYNAMODB_TABLE}
-          StreamSpecification:
-            StreamViewType: NEW_IMAGE
       CognitoUserPool:
         Type: "AWS::Cognito::UserPool"
         Properties:
