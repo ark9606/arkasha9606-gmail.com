@@ -1,4 +1,4 @@
-# Description
+## Description
 This an example of serverless approach in developing backend with AWS.
 
 Project includes next technologies:
@@ -8,8 +8,8 @@ Project includes next technologies:
 - DynamoDB
 - Cognito
 
-### Setting project up
-#### Prerequisites:
+#### Setting project up
+ Prerequisites:
 - node
 - npm
 
