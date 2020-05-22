@@ -15,7 +15,7 @@ Project includes next technologies:
 
 1 Install AWS CLI from [here](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 
-2 Configure your AWS account as described [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-set-up-credentials.html)
+2 Configure your AWS account as described [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-getting-started-set-up-credentials.html) with AWS credentials, which you can find [here](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html)
 
 ```
 $ aws configure
