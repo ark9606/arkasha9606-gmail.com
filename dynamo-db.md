@@ -1,29 +1,28 @@
-## Notes (aka Google Keep):
-- u users
-- up users profile (1u-1u)
-- c categories (1u-*c)
-- n notes (1c-*n)
-- l labels (*n-*l)
-
-## E-commerce:
-- u users
-- p users profile (1u-1p)
-- o orders (1u-*o)
-- i items (1o-*i)
-
 ## A social network
 
-ERD
+#### 1. Database ERD
 ![image](dynamodb-assets/dynamodb_erd.png)
 
+#### 2. Access patterns (questions to database)
+- get user details (user info and hobbies)
+- get comments for user
+- get groups for user
+- get posts for group by status
+- get single group with posts
+- get sent posts
 
+#### 3. Define primary and sort keys
 
-#### Access patterns (questions):
-- get user profile
-- get orders for user
-- get single order with items
-- get orders for user by status
-- get open orders
+| Entities        | PK                          | SK                               |
+| --------------- |:----------------------------|:---------------------------------|
+| user            | USER#&lt;userId&gt;         | DETAILS#&lt;userId&gt;           |
+| user hobby      | -                           | -                                |
+| user group      | USER#&lt;userId&gt;         | GROUP#&lt;groupId&gt;            |
+| group           | GROUP#&lt;groupId&gt;       | DETAILS#&lt;groupId&gt;          |
+| post            | GROUP#&lt;groupId&gt;       | POST#&lt;postId&gt;              |
+| comment         | COMMENT#&lt;commentId&gt;   | POST#&lt;postId&gt;              |
+| comment users   | COMMENT#&lt;commentId&gt;   | USER#&lt;userId&gt;              |
+
 
 ##### One-to-many patterns:
  - denormalization (attribute)
