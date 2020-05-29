@@ -1,27 +1,23 @@
-## A social network
+## Blog table
 
-#### 1. Database ERD
+#### 1. Create database ERD
 ![image](dynamodb-assets/dynamodb_erd.png)
 
-#### 2. Access patterns (questions to database)
-- get user details (user info and hobbies)
-- get comments for user
-- get groups for user
-- get posts for group by status
-- get single group with posts
-- get sent posts
-
+#### 2. Define access patterns (questions to database)
+1. get user profile (user info and hobbies)
+2. get posts for user
+3. get single post with comments
+4. get posts for user by status
+5. get published posts
+    
 #### 3. Define primary and sort keys
 
 | Entities        | PK                          | SK                               |
 | --------------- |:----------------------------|:---------------------------------|
-| user            | USER#&lt;userId&gt;         | DETAILS#&lt;userId&gt;           |
+| user            | USER#&lt;userId&gt;         | PROFILE#&lt;userId&gt;           |
 | user hobby      | -                           | -                                |
-| user group      | USER#&lt;userId&gt;         | GROUP#&lt;groupId&gt;            |
-| group           | GROUP#&lt;groupId&gt;       | DETAILS#&lt;groupId&gt;          |
-| post            | GROUP#&lt;groupId&gt;       | POST#&lt;postId&gt;              |
+| post            | USER#&lt;userId&gt;         | POST#&lt;postId&gt;              |
 | comment         | COMMENT#&lt;commentId&gt;   | POST#&lt;postId&gt;              |
-| comment users   | COMMENT#&lt;commentId&gt;   | USER#&lt;userId&gt;              |
 
 
 ##### One-to-many patterns:
@@ -42,7 +38,10 @@
 
 
 
-##### Choosing an index
-[Local or global: Choosing a secondary index type in DynamoDB](https://www.dynamodbguide.com/local-or-global-choosing-a-secondary-index-type-in-dynamo-db)
+#### Choosing a secondary index in DynamoDB
+
+Sometimes it's hard to define which type of index should be used.
+Following schema displays how to choose index type:
 
 ![image](https://user-images.githubusercontent.com/6509926/72526710-a66b7c80-382c-11ea-8923-dbb9c9589881.png)
+[Link to source](https://www.dynamodbguide.com/local-or-global-choosing-a-secondary-index-type-in-dynamo-db)
